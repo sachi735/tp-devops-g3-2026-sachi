@@ -99,8 +99,8 @@ jobs:
           docker push $IMAGE:latest
 
           echo "Imagen publicada: $IMAGE:$TAG"
-        
-        - name: Trigger deploy en Render
+
+      - name: Trigger deploy en Render
         run: |
           curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
           echo "Deploy disparado en Render"
