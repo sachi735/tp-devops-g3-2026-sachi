@@ -59,18 +59,15 @@ jobs:
         shell: pwsh
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
         run: |
           $ErrorActionPreference = "Stop"
           $PSNativeCommandUseErrorActionPreference = $true
 
           .\.sonar\scanner\dotnet-sonarscanner begin `
-            /k:"$env:SONAR_PROJECT_KEY" `
-            /o:"$env:SONAR_ORGANIZATION" `
+            /k:"sachi735_tp-devops-g3-2026-sachi" `
+            /o:"sachi735" `
             /d:sonar.host.url="https://sonarcloud.io" `
-            /d:sonar.token="$env:SONAR_TOKEN" `
-            /d:sonar.qualitygate.wait="true"
+            /d:sonar.token="$env:SONAR_TOKEN"
 
           dotnet restore
           dotnet build --configuration Release --no-restore
