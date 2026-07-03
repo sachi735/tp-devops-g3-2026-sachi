@@ -1,3 +1,4 @@
+using DevOpsTp.Api;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -10,6 +11,7 @@ var appVersion = Environment.GetEnvironmentVariable("APP_VERSION") ?? ApiVersion
 var gitCommit = Environment.GetEnvironmentVariable("GIT_COMMIT") ?? "local";
 var buildDate = Environment.GetEnvironmentVariable("BUILD_DATE") ?? "local";
 var startedAt = DateTimeOffset.UtcNow;
+const string diagnosticsTag = "Diagnostics";
 
 var environmentName = builder.Environment.EnvironmentName;
 
@@ -97,7 +99,7 @@ app.MapGet("/", (IWebHostEnvironment environment) =>
 
 app.MapHealthChecks("/health")
 .WithName("HealthCheck")
-.WithTags("Diagnostics");
+.WithTags(diagnosticsTag);
 
 app.MapGet("/ready", () =>
 {
@@ -109,7 +111,7 @@ app.MapGet("/ready", () =>
     });
 })
 .WithName("ReadinessCheck")
-.WithTags("Diagnostics");
+.WithTags(diagnosticsTag);
 
 app.MapGet("/version", () =>
 {
@@ -164,7 +166,7 @@ app.MapGet("/status", (IWebHostEnvironment environment) =>
     });
 })
 .WithName("GetStatusPage")
-.WithTags("Diagnostics");
+.WithTags(diagnosticsTag);
 
 app.MapGet("/diagnostics/ping", () =>
 {
@@ -175,14 +177,14 @@ app.MapGet("/diagnostics/ping", () =>
     });
 })
 .WithName("Ping")
-.WithTags("Diagnostics");
+.WithTags(diagnosticsTag);
 
 app.MapGet("/diagnostics/error", () =>
 {
     throw new InvalidOperationException("Controlled error for monitoring validation");
 })
 .WithName("SimulateError")
-.WithTags("Diagnostics");
+.WithTags(diagnosticsTag);
 
 app.MapGet("/diagnostics/slow", async () =>
 {
@@ -196,15 +198,15 @@ app.MapGet("/diagnostics/slow", async () =>
     });
 })
 .WithName("SimulateSlowRequest")
-.WithTags("Diagnostics");
+.WithTags(diagnosticsTag);
 
 app.MapQuestEndpoints();
 
-app.Run();
+await app.RunAsync();
 
-public static class ApiVersion
+public partial class Program
 {
-    public const string Current = "1.0.0";
+    protected Program()
+    {
+    }
 }
-
-public partial class Program { }
