@@ -9,6 +9,7 @@ var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "de
 var appVersion = Environment.GetEnvironmentVariable("APP_VERSION") ?? ApiVersion.Current;
 var gitCommit = Environment.GetEnvironmentVariable("GIT_COMMIT") ?? "local";
 var buildDate = Environment.GetEnvironmentVariable("BUILD_DATE") ?? "local";
+var startedAt = DateTimeOffset.UtcNow;
 
 var environmentName = builder.Environment.EnvironmentName;
 
@@ -121,6 +122,49 @@ app.MapGet("/version", () =>
 })
 .WithName("GetVersion")
 .WithTags("General");
+
+app.MapGet("/status", (IWebHostEnvironment environment) =>
+{
+    var now = DateTimeOffset.UtcNow;
+
+    return Results.Ok(new
+    {
+        status = "operational",
+        service = serviceName,
+        environment = environment.EnvironmentName,
+        version = appVersion,
+        commit = gitCommit,
+        buildDate = buildDate,
+        startedAt = startedAt,
+        uptimeSeconds = Math.Round((now - startedAt).TotalSeconds, 2),
+        generatedAt = now,
+        checks = new[]
+        {
+            new
+            {
+                name = "api",
+                status = "ok",
+                description = "Application process is running"
+            },
+            new
+            {
+                name = "quest-store",
+                status = "ok",
+                description = "In-memory quest store is available"
+            },
+            new
+            {
+                name = "telemetry-export",
+                status = otlpEndpointConfigured ? "enabled" : "disabled",
+                description = otlpEndpointConfigured
+                    ? "OTLP exporter is configured"
+                    : "OTLP exporter is not configured for this environment"
+            }
+        }
+    });
+})
+.WithName("GetStatusPage")
+.WithTags("Diagnostics");
 
 app.MapGet("/diagnostics/ping", () =>
 {

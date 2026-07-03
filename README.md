@@ -26,6 +26,7 @@ El objetivo del proyecto es construir una API simple y utilizarla como base para
 - Render
 - OpenTelemetry
 - New Relic
+- SonarQube Cloud
 
 ## Endpoints generales
 
@@ -35,6 +36,7 @@ El objetivo del proyecto es construir una API simple y utilizarla como base para
 | GET | `/health` | Health check técnico |
 | GET | `/ready` | Readiness check |
 | GET | `/version` | Versión de la API |
+| GET | `/status` | Status page operativa |
 | GET | `/diagnostics/ping` | Endpoint simple de diagnóstico |
 | GET | `/diagnostics/error` | Error controlado para monitoreo |
 | GET | `/diagnostics/slow` | Endpoint lento para pruebas de APM |
@@ -101,6 +103,7 @@ El repositorio utiliza GitHub Actions:
 
 - CI en pull requests hacia `develop` y `main`.
 - Build y tests automatizados.
+- Análisis estático con SonarQube Cloud.
 - Validación de flujo de mergeo hacia `main`.
 - CD en push a `main`.
 - Generación de versión semántica.
@@ -114,15 +117,16 @@ El repositorio utiliza GitHub Actions:
 Ambiente publicado en Render:
 
 ```txt
-https://tp-devops-g3-2026.onrender.com
+https://tp-devops-g3-2026-sachi.onrender.com
 ```
 
 Endpoints útiles para validar el deploy:
 
 ```bash
-curl https://tp-devops-g3-2026.onrender.com/health
-curl https://tp-devops-g3-2026.onrender.com/api/quests
-curl https://tp-devops-g3-2026.onrender.com/api/quests/summary
+curl https://tp-devops-g3-2026-sachi.onrender.com/health
+curl https://tp-devops-g3-2026-sachi.onrender.com/status
+curl https://tp-devops-g3-2026-sachi.onrender.com/api/quests
+curl https://tp-devops-g3-2026-sachi.onrender.com/api/quests/summary
 ```
 
 ## Monitoreo
@@ -133,6 +137,16 @@ La configuración de variables de entorno y endpoints de validación está docum
 
 ```txt
 docs/monitoreo.md
+```
+
+## Status page
+
+La API incluye un endpoint `/status` como status page liviana para validar estado operativo, versión, uptime y checks básicos.
+
+La funcionalidad está documentada en:
+
+```txt
+docs/status-page.md
 ```
 
 ## Estado del proyecto
@@ -150,6 +164,8 @@ docs/monitoreo.md
 - [x] Deploy en Render
 - [x] Monitoreo base con OpenTelemetry y New Relic
 - [x] Semantic versioning
+- [x] Status page operativa
+- [x] Análisis estático con SonarQube Cloud
 
 ## Pendientes / mejoras posibles
 
