@@ -100,18 +100,7 @@ jobs:
 
           echo "Imagen publicada: $IMAGE:$TAG"
 
-      - name: Trigger deploy en Render con imagen versionada
+      - name: Trigger deploy en Render
         run: |
-          TAG="${{ needs.tag.outputs.version }}"
-          IMAGE="docker.io/${{ secrets.DOCKERHUB_USERNAME }}/devops-tp-api:${TAG}"
-          HOOK="${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-
-          if [[ "$HOOK" == *"?"* ]]; then
-            DEPLOY_URL="${HOOK}&imgURL=${IMAGE}"
-          else
-            DEPLOY_URL="${HOOK}?imgURL=${IMAGE}"
-          fi
-
-          curl -s --fail -X POST "$DEPLOY_URL"
-
-          echo "Deploy disparado en Render con imagen: $IMAGE"
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo "Deploy disparado en Render"
