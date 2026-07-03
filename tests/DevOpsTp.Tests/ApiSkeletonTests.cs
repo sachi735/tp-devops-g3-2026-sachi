@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace DevOpsTp.Tests;
@@ -42,6 +43,19 @@ public class ApiSkeletonTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await _client.GetAsync("/version");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task StatusEndpoint_ReturnsOperationalStatus()
+    {
+        var response = await _client.GetAsync("/status");
+        var body = await response.Content.ReadAsStringAsync();
+        using var json = JsonDocument.Parse(body);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("operational", json.RootElement.GetProperty("status").GetString());
+        Assert.True(json.RootElement.GetProperty("uptimeSeconds").GetDouble() >= 0);
+        Assert.True(json.RootElement.GetProperty("checks").GetArrayLength() >= 3);
     }
 
     [Fact]
